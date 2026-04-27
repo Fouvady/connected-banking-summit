@@ -52,3 +52,16 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# Sandbox-specific files
+/upload/
+/download/
+/mini-services/
+/examples/
+connected-banking-summit.bundle
+Caddyfile
+db/
+prisma/
+worklog.md
+.zscripts/
+skills/
