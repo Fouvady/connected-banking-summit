@@ -273,7 +273,7 @@ function HeroSection({ onWatchHighlights }: { onWatchHighlights: () => void }) {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img
-          src="/hero-bg.png"
+          src={process.env.NODE_ENV === 'production' ? '/connected-banking-summit/hero-bg.png' : '/hero-bg.png'}
           alt="Futuristic banking conference"
           className="w-full h-full object-cover opacity-30"
         />

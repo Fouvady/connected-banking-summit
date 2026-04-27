@@ -9,6 +9,70 @@ interface Message {
   content: string
 }
 
+// Static knowledge base for GitHub Pages (no server required)
+const KNOWLEDGE_BASE: Record<string, string> = {
+  pricing: 'We offer three pricing tiers: Explorer Pass ($499, was $699), Visionary Pass ($1,299, was $1,799), and Titan Pass ($3,499, was $4,999). Early bird pricing ends February 15, 2026. Group discounts available: 5-9 attendees = 20% off, 10+ = 30% off. Virtual Explorer Pass available at $199.',
+  speaker: 'Our keynote speakers include Dr. Sarah Chen (Chief AI Officer, Global Finance Corp), Marcus Al-Rashid (CEO, NeoBank Holdings), Elena Volkov (VP Cybersecurity, SecureNet International), James Okafor (Head of Innovation, Atlantic Capital Group), Priya Sharma (Director of DeFi, ChainVault Protocol), David Kim (CTO, Pacific Digital Bank), Amara Diallo (Chief Risk Officer, Sahara Financial), and Thomas Weber (Head of Payments, EuroPay Solutions). 120+ speakers total!',
+  venue: 'The summit takes place at the Dubai International Financial Centre (DIFC), Dubai, UAE — one of the world\'s leading financial hubs with state-of-the-art conference facilities.',
+  theme: 'Six key themes: 1) AI & Machine Learning, 2) Cybersecurity & Resilience, 3) Digital Payments Revolution, 4) Open Banking & APIs, 5) Blockchain & DeFi, 6) Sustainable Finance. Each theme features dedicated keynotes, panels, and workshops.',
+  date: 'The summit runs March 15-17, 2026 — three days of keynotes, panels, workshops, and networking. Day 1: Foundation & Vision, Day 2: Innovation & Disruption, Day 3: Strategy & Action.',
+  agenda: 'Day 1 (March 15) — Foundation & Vision: Opening Ceremony, AI-Driven Risk Management, Zero Trust Architecture, Open Banking Panel, VIP Reception. Day 2 (March 16) — Innovation & Disruption: DeFi Keynote, Cloud-Native Banking, Sustainable Finance, Digital-First Bank Workshop, Fireside Chat. Day 3 (March 17) — Strategy & Action: Quantum Computing & Security, Invisible Payment Revolution, Regulatory Roundtable, Hackathon Finals, Grand Closing.',
+  refund: 'Full refunds until January 15, 2026. 50% refund until February 28, 2026. Contact info@connectedbanking.com for refund requests.',
+  translation: 'Translation services are available in Arabic, Mandarin, French, Japanese, and Spanish across all keynotes and main sessions.',
+  virtual: 'Yes! The Virtual Explorer Pass is available at $199 and includes live streaming of all keynotes in 4K with real-time AI translation and digital networking opportunities.',
+  contact: 'You can reach us at info@connectedbanking.com for any questions about registration, sponsorship, or logistics. Our team typically responds within 24 hours.',
+  sponsor: 'We offer Platinum, Gold, Silver, and Bronze sponsorship tiers. Each includes branding, exhibition space, and speaking opportunities. Contact info@connectedbanking.com for the sponsorship deck.',
+}
+
+function getSmartResponse(message: string): string {
+  const lower = message.toLowerCase()
+
+  // Check for matching topics
+  for (const [key, response] of Object.entries(KNOWLEDGE_BASE)) {
+    if (lower.includes(key)) return response
+  }
+
+  // Pattern matching for common questions
+  if (lower.includes('how much') || lower.includes('cost') || lower.includes('price') || lower.includes('ticket')) {
+    return KNOWLEDGE_BASE.pricing
+  }
+  if (lower.includes('who') && (lower.includes('speak') || lower.includes('keynote') || lower.includes('present'))) {
+    return KNOWLEDGE_BASE.speaker
+  }
+  if (lower.includes('where') && (lower.includes('location') || lower.includes('place') || lower.includes('held'))) {
+    return KNOWLEDGE_BASE.venue
+  }
+  if (lower.includes('when') || lower.includes('date') || lower.includes('schedule')) {
+    return KNOWLEDGE_BASE.agenda
+  }
+  if (lower.includes('topic') || lower.includes('focus') || lower.includes('about the summit')) {
+    return KNOWLEDGE_BASE.theme
+  }
+  if (lower.includes('refund') || lower.includes('cancel') || lower.includes('money back')) {
+    return KNOWLEDGE_BASE.refund
+  }
+  if (lower.includes('language') || lower.includes('translate') || lower.includes('arabic')) {
+    return KNOWLEDGE_BASE.translation
+  }
+  if (lower.includes('online') || lower.includes('virtual') || lower.includes('remote')) {
+    return KNOWLEDGE_BASE.virtual
+  }
+  if (lower.includes('contact') || lower.includes('email') || lower.includes('reach') || lower.includes('help')) {
+    return KNOWLEDGE_BASE.contact
+  }
+  if (lower.includes('sponsor') || lower.includes('partner') || lower.includes('exhibit')) {
+    return KNOWLEDGE_BASE.sponsor
+  }
+  if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
+    return 'Hello! Welcome to the Connected Banking Summit 2026. I can help you with information about speakers, agenda, pricing, venue, and more. What would you like to know?'
+  }
+  if (lower.includes('thank')) {
+    return 'You\'re welcome! If you have any more questions about the summit, feel free to ask. We look forward to seeing you in Dubai! 🎉'
+  }
+
+  return 'Great question! I can help with information about our speakers, agenda, pricing tiers, venue details, sponsorship opportunities, and more. Could you specify what you\'d like to know? You can also reach our team directly at info@connectedbanking.com.'
+}
+
 export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
@@ -33,25 +97,12 @@ export default function AIChatWidget() {
     setMessages(prev => [...prev, { role: 'user', content: userMessage }])
     setIsLoading(true)
 
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage }),
-      })
+    // Simulate typing delay for a natural feel
+    await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 800))
 
-      if (!response.ok) throw new Error('Failed to get response')
-
-      const data = await response.json()
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response }])
-    } catch {
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: 'I apologize, I\'m experiencing a temporary issue. Please try again in a moment, or contact our team directly at info@connectedbanking.com for immediate assistance.'
-      }])
-    } finally {
-      setIsLoading(false)
-    }
+    const response = getSmartResponse(userMessage)
+    setMessages(prev => [...prev, { role: 'assistant', content: response }])
+    setIsLoading(false)
   }
 
   const quickQuestions = [
