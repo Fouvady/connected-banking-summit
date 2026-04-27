@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useSyncExternalStore } from 'react'
 
 interface TimeLeft {
   days: number
@@ -9,29 +9,32 @@ interface TimeLeft {
   seconds: number
 }
 
+const emptyTimeLeft: TimeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 }
+
+function calculateTimeLeft(targetDate: string): TimeLeft {
+  const difference = new Date(targetDate).getTime() - Date.now()
+  if (difference > 0) {
+    return {
+      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((difference / 1000 / 60) % 60),
+      seconds: Math.floor((difference / 1000) % 60),
+    }
+  }
+  return emptyTimeLeft
+}
+
 export default function CountdownTimer({ targetDate }: { targetDate: string }) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-  const [mounted, setMounted] = useState(false)
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => calculateTimeLeft(targetDate))
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  )
 
   useEffect(() => {
-    setMounted(true)
-    const calculateTimeLeft = () => {
-      const difference = new Date(targetDate).getTime() - new Date().getTime()
-
-      if (difference > 0) {
-        return {
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
-        }
-      }
-      return { days: 0, hours: 0, minutes: 0, seconds: 0 }
-    }
-
-    setTimeLeft(calculateTimeLeft())
     const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft())
+      setTimeLeft(calculateTimeLeft(targetDate))
     }, 1000)
 
     return () => clearInterval(timer)

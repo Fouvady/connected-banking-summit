@@ -203,6 +203,42 @@
   100% { stroke-dashoffset: 0; }
 }
 
+/* Marquee scroll */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Marquee scroll reverse */
+@keyframes marquee-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+/* Typewriter cursor blink */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Pulse ring expand */
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* Energy wave */
+@keyframes energy-wave {
+  0% { transform: scaleX(0); opacity: 0.8; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+/* Orbit animation */
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(80px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(80px) rotate(-360deg); }
+}
+
 /* ===== UTILITY CLASSES ===== */
 
 .glass {
@@ -300,6 +336,38 @@
 .animate-gradient-shift {
   background-size: 200% 200%;
   animation: gradient-shift 8s ease infinite;
+}
+
+/* Marquee animations */
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse 45s linear infinite;
+}
+
+.animate-marquee-reverse:hover {
+  animation-play-state: paused;
+}
+
+/* Cursor blink */
+.animate-cursor-blink {
+  animation: cursor-blink 1s step-end infinite;
+}
+
+/* Orbit */
+.animate-orbit {
+  animation: orbit 10s linear infinite;
+}
+
+/* Pulse ring */
+.animate-pulse-ring {
+  animation: pulse-ring 2s ease-out infinite;
 }
 
 /* Scan line overlay */
@@ -417,4 +485,32 @@ html {
 ::selection {
   background: rgba(0, 240, 255, 0.3);
   color: #ffffff;
+}
+
+/* Energy line decoration */
+.energy-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.energy-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.3), transparent);
+  animation: energy-wave 3s ease-out infinite;
+  transform-origin: left;
+}
+
+/* Futuristic text gradient animation */
+.text-gradient-animated {
+  background: linear-gradient(90deg, #00f0ff, #00d4aa, #ffd700, #00f0ff);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 4s ease infinite;
 }

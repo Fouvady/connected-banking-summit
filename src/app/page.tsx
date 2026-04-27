@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight,
@@ -25,10 +25,24 @@ import {
   Award,
   Rocket,
   MessageSquare,
+  Wifi,
+  Monitor,
+  Mic,
+  Coffee,
+  Headphones,
 } from 'lucide-react'
 import ParticleBackground from '@/components/ParticleBackground'
 import CountdownTimer from '@/components/CountdownTimer'
 import AnimatedSection from '@/components/AnimatedSection'
+import ScrollProgress from '@/components/ScrollProgress'
+import AnimatedCounter from '@/components/AnimatedCounter'
+import GlobeVisualizer from '@/components/GlobeVisualizer'
+import PricingSection from '@/components/PricingSection'
+import TestimonialsMarquee from '@/components/TestimonialsMarquee'
+import FAQSection from '@/components/FAQSection'
+import VideoModal from '@/components/VideoModal'
+import LiveNotifications from '@/components/LiveNotifications'
+import AIChatWidget from '@/components/AIChatWidget'
 
 // ===== DATA =====
 const EVENT_DATE = '2026-03-15T09:00:00'
@@ -36,10 +50,10 @@ const EVENT_LOCATION = 'Dubai International Financial Centre'
 const EVENT_YEAR = '2026'
 
 const stats = [
-  { value: '5000+', label: 'Attendees', icon: Users },
-  { value: '120+', label: 'Speakers', icon: MessageSquare },
-  { value: '50+', label: 'Countries', icon: Globe },
-  { value: '80+', label: 'Sessions', icon: Play },
+  { value: 5000, suffix: '+', label: 'Attendees', icon: Users },
+  { value: 120, suffix: '+', label: 'Speakers', icon: MessageSquare },
+  { value: 50, suffix: '+', label: 'Countries', icon: Globe },
+  { value: 80, suffix: '+', label: 'Sessions', icon: Play },
 ]
 
 const keyThemes = [
@@ -149,6 +163,15 @@ const sponsors = [
   { name: 'CyberShield Pro', tier: 'bronze' },
 ]
 
+const experienceFeatures = [
+  { icon: Wifi, title: 'Live Streaming', desc: 'All keynotes streamed in 4K with real-time AI translation' },
+  { icon: Monitor, title: 'Innovation Lab', desc: '60+ live demos of cutting-edge banking technology' },
+  { icon: Mic, title: 'Podcast Studio', desc: 'Live podcast recordings with summit speakers' },
+  { icon: Coffee, title: 'Networking Lounges', desc: 'AI-powered matchmaking for meaningful connections' },
+  { icon: Headphones, title: 'Concierge App', desc: 'Personalized agenda & real-time event navigation' },
+  { icon: Sparkles, title: 'AR Experience', desc: 'Augmented reality venue tours & product showcases' },
+]
+
 // ===== COMPONENTS =====
 
 function Navbar() {
@@ -161,7 +184,7 @@ function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const navLinks = ['About', 'Themes', 'Speakers', 'Agenda', 'Sponsors']
+  const navLinks = ['About', 'Themes', 'Speakers', 'Agenda', 'Pricing', 'FAQ']
 
   return (
     <motion.nav
@@ -244,7 +267,7 @@ function Navbar() {
   )
 }
 
-function HeroSection() {
+function HeroSection({ onWatchHighlights }: { onWatchHighlights: () => void }) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -342,7 +365,10 @@ function HeroSection() {
             Secure Your Spot
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
-          <button className="group px-8 py-4 rounded-xl glass hover:bg-white/10 text-white font-medium text-base transition-all duration-300 flex items-center gap-2">
+          <button
+            onClick={onWatchHighlights}
+            className="group px-8 py-4 rounded-xl glass hover:bg-white/10 text-white font-medium text-base transition-all duration-300 flex items-center gap-2"
+          >
             <Play className="w-5 h-5 text-cyan-400" />
             Watch Highlights
           </button>
@@ -380,7 +406,12 @@ function StatsSection() {
             <AnimatedSection key={stat.label} delay={i * 0.1} direction="up">
               <div className="glass-card rounded-xl p-6 text-center group cursor-default">
                 <stat.icon className="w-6 h-6 text-cyan-400 mx-auto mb-3 group-hover:scale-110 transition-transform duration-300" />
-                <div className="text-3xl md:text-4xl font-bold glow-text mb-1">{stat.value}</div>
+                <AnimatedCounter
+                  end={stat.value}
+                  suffix={stat.suffix}
+                  className="text-3xl md:text-4xl font-bold glow-text mb-1"
+                  duration={2500}
+                />
                 <div className="text-sm text-white/40 tracking-wide uppercase">{stat.label}</div>
               </div>
             </AnimatedSection>
@@ -394,7 +425,6 @@ function StatsSection() {
 function AboutSection() {
   return (
     <section id="about" className="relative py-24 md:py-32">
-      {/* Background */}
       <div className="absolute inset-0 dot-pattern opacity-30" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -451,33 +481,20 @@ function AboutSection() {
             </AnimatedSection>
           </div>
 
-          {/* Right - Visual */}
+          {/* Right - Globe */}
           <AnimatedSection delay={0.2} direction="right">
             <div className="relative">
-              <div className="glass-card rounded-2xl p-8 relative overflow-hidden">
-                {/* Abstract BG Image */}
-                <img
-                  src="/abstract-bg.png"
-                  alt="Futuristic fintech visualization"
-                  className="w-full h-64 md:h-80 object-cover rounded-xl mb-6 opacity-80"
-                />
-                {/* Overlay stats */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="glass rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold glow-text-gold">3</div>
-                    <div className="text-xs text-white/40 mt-1">Days of Innovation</div>
+              <div className="glass-card rounded-2xl p-6 relative overflow-hidden">
+                <GlobeVisualizer />
+                {/* Info overlay */}
+                <div className="flex items-center justify-center gap-4 mt-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-amber-400" />
+                    <span className="text-[10px] text-white/40">Dubai (Host City)</span>
                   </div>
-                  <div className="glass rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold glow-text">80+</div>
-                    <div className="text-xs text-white/40 mt-1">Expert Sessions</div>
-                  </div>
-                  <div className="glass rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold glow-text">40+</div>
-                    <div className="text-xs text-white/40 mt-1">Workshops</div>
-                  </div>
-                  <div className="glass rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold glow-text-gold">20+</div>
-                    <div className="text-xs text-white/40 mt-1">Product Launches</div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-cyan-400" />
+                    <span className="text-[10px] text-white/40">Attendee Origins</span>
                   </div>
                 </div>
                 {/* Corner decorations */}
@@ -492,10 +509,50 @@ function AboutSection() {
   )
 }
 
+function ExperienceSection() {
+  return (
+    <section className="relative py-24 md:py-32 overflow-hidden">
+      <div className="absolute inset-0 hex-pattern opacity-30" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <AnimatedSection>
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 mb-6">
+              <div className="w-8 h-[1px] bg-cyan-400" />
+              <span className="text-xs uppercase tracking-[0.3em] text-cyan-400 font-medium">Summit Experience</span>
+              <div className="w-8 h-[1px] bg-cyan-400" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">
+              Beyond <span className="gradient-text">Ordinary</span>
+            </h2>
+            <p className="text-white/40 mt-4 max-w-xl mx-auto">
+              Immersive technology meets world-class content for an unforgettable experience
+            </p>
+          </div>
+        </AnimatedSection>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {experienceFeatures.map((feature, i) => (
+            <AnimatedSection key={feature.title} delay={i * 0.1} direction="up">
+              <div className="glass-card rounded-xl p-6 group cursor-default relative overflow-hidden">
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-cyan-500/10 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <feature.icon className="w-8 h-8 text-cyan-400 mb-4 group-hover:scale-110 transition-transform duration-300" />
+                <h3 className="text-base font-bold mb-2 group-hover:text-cyan-400 transition-colors duration-300">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-white/40 leading-relaxed">{feature.desc}</p>
+              </div>
+            </AnimatedSection>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function ThemesSection() {
   return (
     <section id="themes" className="relative py-24 md:py-32 overflow-hidden">
-      {/* Background */}
       <div className="absolute inset-0 hex-pattern opacity-50" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -519,7 +576,6 @@ function ThemesSection() {
           {keyThemes.map((theme, i) => (
             <AnimatedSection key={theme.title} delay={i * 0.1} direction="up">
               <div className="glass-card rounded-xl p-6 h-full group cursor-default relative overflow-hidden">
-                {/* Gradient glow on hover */}
                 <div className={`absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br ${theme.color} rounded-full blur-[60px] opacity-0 group-hover:opacity-15 transition-opacity duration-500`} />
 
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${theme.color} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
@@ -573,14 +629,12 @@ function SpeakersSection() {
           {speakers.map((speaker, i) => (
             <AnimatedSection key={speaker.name} delay={i * 0.08} direction="up">
               <div className="glass-card rounded-xl p-6 text-center group cursor-default">
-                {/* Avatar */}
                 <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-cyan-500/20 to-teal-500/20 flex items-center justify-center relative">
                   <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#111640] to-[#0a0e27] flex items-center justify-center">
                     <span className="text-2xl font-bold glow-text">
                       {speaker.name.split(' ').map(n => n[0]).join('')}
                     </span>
                   </div>
-                  {/* Rotating ring */}
                   <div className="absolute inset-0 rounded-full border border-cyan-500/20 group-hover:border-cyan-500/50 transition-colors duration-500" style={{ borderTopColor: 'rgba(0,240,255,0.5)' }} />
                 </div>
 
@@ -597,7 +651,6 @@ function SpeakersSection() {
           ))}
         </div>
 
-        {/* View All */}
         <AnimatedSection delay={0.4}>
           <div className="text-center mt-12">
             <button className="group inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors text-sm font-medium">
@@ -632,7 +685,6 @@ function AgendaSection() {
           </div>
         </AnimatedSection>
 
-        {/* Day Tabs */}
         <AnimatedSection delay={0.1}>
           <div className="flex justify-center gap-3 mb-12">
             {agendaDays.map((day, i) => (
@@ -652,7 +704,6 @@ function AgendaSection() {
           </div>
         </AnimatedSection>
 
-        {/* Sessions */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeDay}
@@ -662,12 +713,10 @@ function AgendaSection() {
             transition={{ duration: 0.4 }}
           >
             <div className="max-w-3xl mx-auto">
-              {/* Day Title */}
               <div className="text-center mb-8">
                 <h3 className="text-xl font-bold glow-text">{agendaDays[activeDay].title}</h3>
               </div>
 
-              {/* Timeline */}
               <div className="space-y-4">
                 {agendaDays[activeDay].sessions.map((session, i) => {
                   const typeStyles: Record<string, { border: string; badge: string; badgeText: string }> = {
@@ -797,9 +846,20 @@ function SponsorsSection() {
 }
 
 function CTASection() {
+  const [email, setEmail] = useState('')
+  const [subscribed, setSubscribed] = useState(false)
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (email.trim()) {
+      setSubscribed(true)
+      setEmail('')
+      setTimeout(() => setSubscribed(false), 4000)
+    }
+  }
+
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
-      {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-teal-500/5 animate-gradient-shift" />
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/8 rounded-full blur-[120px]" />
       <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-teal-500/8 rounded-full blur-[100px]" />
@@ -807,13 +867,15 @@ function CTASection() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <AnimatedSection>
           <div className="glass-card rounded-2xl p-8 md:p-12 lg:p-16 text-center relative overflow-hidden">
-            {/* Corner accents */}
             <div className="absolute top-0 left-0 w-24 h-24 border-t-2 border-l-2 border-cyan-500/20 rounded-tl-2xl" />
             <div className="absolute bottom-0 right-0 w-24 h-24 border-b-2 border-r-2 border-teal-500/20 rounded-br-2xl" />
 
-            {/* Animated ring */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[400px] md:h-[400px] rounded-full border border-cyan-500/5" style={{ animation: 'rotate-glow 20s linear infinite' }}>
+            {/* Animated orbiting ring */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[400px] md:h-[400px] rounded-full border border-cyan-500/5 pointer-events-none" style={{ animation: 'rotate-glow 20s linear infinite' }}>
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-cyan-400 rounded-full" />
+            </div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] md:w-[280px] md:h-[280px] rounded-full border border-teal-500/5 pointer-events-none" style={{ animation: 'rotate-glow 15s linear infinite reverse' }}>
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-teal-400 rounded-full" />
             </div>
 
             <Rocket className="w-12 h-12 text-cyan-400 mx-auto mb-6" />
@@ -824,11 +886,32 @@ function CTASection() {
               Join 5,000+ banking leaders, innovators, and visionaries at the most anticipated financial technology summit of the year.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
               <button className="group px-10 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 text-black font-bold text-base hover:shadow-2xl hover:shadow-cyan-500/30 transition-all duration-500 hover:scale-105 flex items-center gap-2">
                 Register Now — Early Bird
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
+            </div>
+
+            {/* Newsletter signup */}
+            <div className="max-w-md mx-auto">
+              <p className="text-xs text-white/30 mb-3 uppercase tracking-wider">Or get summit updates delivered to you</p>
+              <form onSubmit={handleSubscribe} className="flex gap-2">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-cyan-500/30 transition-colors"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-lg glass hover:bg-white/10 text-cyan-400 text-sm font-medium transition-all"
+                >
+                  {subscribed ? 'Subscribed!' : 'Subscribe'}
+                </button>
+              </form>
             </div>
 
             <p className="text-xs text-white/25 mt-4">Early bird pricing ends February 15, {EVENT_YEAR}</p>
@@ -841,7 +924,7 @@ function CTASection() {
 
 function Footer() {
   return (
-    <footer className="relative border-t border-cyan-500/5 py-12 md:py-16">
+    <footer className="relative border-t border-cyan-500/5 py-12 md:py-16 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Brand */}
@@ -867,7 +950,7 @@ function Footer() {
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wider mb-4 text-white/60">Summit</h4>
             <ul className="space-y-2">
-              {['About', 'Themes', 'Speakers', 'Agenda', 'Sponsors'].map(link => (
+              {['About', 'Themes', 'Speakers', 'Agenda', 'Pricing'].map(link => (
                 <li key={link}>
                   <a href={`#${link.toLowerCase()}`} className="text-sm text-white/30 hover:text-cyan-400 transition-colors">
                     {link}
@@ -883,38 +966,38 @@ function Footer() {
             <ul className="space-y-2">
               {['Register', 'Pricing', 'Travel', 'Visa Info', 'FAQ'].map(link => (
                 <li key={link}>
-                  <span className="text-sm text-white/30 hover:text-cyan-400 transition-colors cursor-pointer">
+                  <a href={link === 'FAQ' ? '#faq' : link === 'Pricing' ? '#pricing' : '#'} className="text-sm text-white/30 hover:text-cyan-400 transition-colors">
                     {link}
-                  </span>
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Connect */}
+          {/* Contact */}
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wider mb-4 text-white/60">Connect</h4>
             <ul className="space-y-2">
-              {['Contact Us', 'Media Kit', 'Newsletter', 'Partnership', 'Press'].map(link => (
+              {['info@connectedbanking.com', 'Press Inquiries', 'Partnerships', 'Speaker Applications'].map(link => (
                 <li key={link}>
-                  <span className="text-sm text-white/30 hover:text-cyan-400 transition-colors cursor-pointer">
+                  <a href="#" className="text-sm text-white/30 hover:text-cyan-400 transition-colors">
                     {link}
-                  </span>
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        {/* Bottom */}
-        <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Bottom bar */}
+        <div className="border-t border-cyan-500/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/20">
             &copy; {EVENT_YEAR} Connected Banking Summit. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <span className="text-xs text-white/20 hover:text-cyan-400/60 cursor-pointer transition-colors">Privacy Policy</span>
-            <span className="text-xs text-white/20 hover:text-cyan-400/60 cursor-pointer transition-colors">Terms of Service</span>
-            <span className="text-xs text-white/20 hover:text-cyan-400/60 cursor-pointer transition-colors">Cookie Policy</span>
+            <a href="#" className="text-xs text-white/20 hover:text-cyan-400 transition-colors">Privacy Policy</a>
+            <a href="#" className="text-xs text-white/20 hover:text-cyan-400 transition-colors">Terms of Service</a>
+            <a href="#" className="text-xs text-white/20 hover:text-cyan-400 transition-colors">Code of Conduct</a>
           </div>
         </div>
       </div>
@@ -923,39 +1006,34 @@ function Footer() {
 }
 
 // ===== MAIN PAGE =====
-export default function Home() {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-[#0a0e27] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-500 rotate-45 animate-pulse" />
-          <span className="text-white/30 text-sm">Loading...</span>
-        </div>
-      </div>
-    )
-  }
+export default function HomePage() {
+  const [videoOpen, setVideoOpen] = useState(false)
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0e27]">
+    <div className="min-h-screen flex flex-col bg-[#0a0e27] text-white overflow-x-hidden">
+      <ScrollProgress />
       <ParticleBackground />
       <Navbar />
-      <main className="flex-1 relative z-[1]">
-        <HeroSection />
+      <LiveNotifications />
+      <AIChatWidget />
+
+      <main className="flex-1">
+        <HeroSection onWatchHighlights={() => setVideoOpen(true)} />
         <StatsSection />
         <AboutSection />
+        <ExperienceSection />
         <ThemesSection />
         <SpeakersSection />
         <AgendaSection />
+        <TestimonialsMarquee />
+        <PricingSection />
         <SponsorsSection />
+        <FAQSection />
         <CTASection />
       </main>
+
       <Footer />
+      <VideoModal isOpen={videoOpen} onClose={() => setVideoOpen(false)} />
     </div>
   )
 }
